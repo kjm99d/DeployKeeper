@@ -5,11 +5,13 @@ const app = express();
 const port = 8080;
 
 const userRoutes = require('./routes/userRoute');
+const chipherRoutes = require('./routes/chipherRoute');
 
 app.use(express.json());
 
 
 app.use('/api/user', userRoutes);
+app.use('/api/chipher', chipherRoutes);
 
 app.get('/', (req, res) => {
     res.send("Hello, World!");

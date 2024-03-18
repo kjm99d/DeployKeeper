@@ -2,13 +2,18 @@
 const express = require('express');
 const router = express.Router();
 
-const { secretKey } = require('./../serectKey');
+const { ServerKey } = require('./../config');
 const ErrorCodes = require('../errorCodes');
 
-router.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
     var code = ErrorCodes.SUCCESS;
 
-    const data = secretKey;
+    if (!ServerKey) {
+        code = ErrorCodes.SERVER_KEY_NOT_FOUND;
+        return res.json({ code })
+    }
 
-    return res.json({ code, data })
+    return res.json({ code, data: ServerKey });
 });
+
+module.exports = router;
