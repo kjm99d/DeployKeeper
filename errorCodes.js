@@ -15,6 +15,10 @@ const ErrorCodes = {
 
     // 토큰 관련에러 400~
     TOKEN_EXPIRED : 400,
+    TOKEN_SECRET_KEY_NOT_FOUND : 401,
+
+    // 서버키 관련에러 500~
+    SERVER_KEY_NOT_FOUND : 500,
     
 };
 

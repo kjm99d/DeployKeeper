@@ -3,10 +3,9 @@ const router = express.Router();
 const mysql = require('mysql2/promise');
 const jwt = require('jsonwebtoken');
 
-const { dbConfig } = require('./../config');
+const { dbConfig, SecretKey_JWT } = require('./../config');
 const ProductService = require('./../services/productService');
 const UserService = require('./../services/userService');
-const { secretKey } = require('./../serectKey');
 const ErrorCodes = require('../errorCodes');
 
 router.post('/login', async (req, res) => {
@@ -33,7 +32,12 @@ router.post('/login', async (req, res) => {
             code = ErrorCodes.USER_PRODUCT_EXPIRED;
             return res.json({ code });
         }
-
+        
+        if (!SecretKey_JWT)
+        {
+            code = ErrorCodes.TOKEN_SECRET_KEY_NOT_FOUND;
+            return res.json({ code });
+        }
 
         // 성공
         const currentDate = new Date();
@@ -42,7 +46,7 @@ router.post('/login', async (req, res) => {
 
         if (diffMilisec > 0) {
             // Create Access Token
-            const token = jwt.sign({ userId, productId }, secretKey, { expiresIn: '24h' });
+            const token = jwt.sign({ userId, productId }, SecretKey_JWT, { expiresIn: '24h' });
             return res.json({ code, token });
         }
 

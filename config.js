@@ -8,7 +8,12 @@ const dbConfig = {
     database: process.env.DB_NAME       // 연결할 데이터베이스 이름
 };
 
+const ServerKey = process.env.SERVER_KEY;       // 서버에 저장된 암호화키 ( ETC )
+const SecretKey_JWT = process.env.SECRET_KEY;   // JWT 토큰 Secret Key
+
 
 module.exports = {
-    dbConfig
+    dbConfig,
+    ServerKey,
+    SecretKey_JWT
 }
