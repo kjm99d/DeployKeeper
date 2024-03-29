@@ -7,12 +7,13 @@
 |-------|-------|-------|-------|-------|-------|
 | ✅ 로그인 | All | /api/user/login | Post | {product : '', username : '', password : ''} | ... |
 | ✅ 회원가입 | User | /api/user/register | Post | {product : '', username : '', password : ''} | ... |
-| ❌ 정책 가져오기 | All | /api/policy | Get | ... | ... |
-| ❌ 정책 추가하기 | Admin | /api/policy | Put | ... | ... |
-| ❌ 정책 수정하기 | Admin | /api/policy | Patch | ... | ... |
-| ❌ 정책 삭제하기 | Admin | /api/policy | Delete | ... | ... |
-| ❌ 제품 추가하기 | Admin | /api/product | Put | ... | ... |
-| ❌ 제품 삭제하기 | Admin | /api/product | Delete | ... | ... |
+| ✅ 제품 추가하기 | Admin | /api/product | Put | ... | ... |
+| ✅ 제품 삭제하기 | Admin | /api/product | Delete | ... | ... |
+| ✅ 제품의 모든 정책 가져오기 | Admin | /api/all | Get | ... | ... |
+| ✅ 제품의 정책 가져오기 | All | /api/policy | Get | ... | ... |
+| ✅ 제품의 정책 추가하기 | Admin | /api/policy | Put | ... | ... |
+| ✅ 제품의 정책 수정하기 | Admin | /api/policy | Patch | ... | ... |
+| ❌ 제품의 정책 삭제하기 | Admin | /api/policy | Delete | ... | ... |
 | ❌ 형상정보 가져오기 | All | /api/... | Get | ... | ... |
 | ✅ 서버키 가져오기 | All | /api/chpher/ | Get | ... | ... |
 

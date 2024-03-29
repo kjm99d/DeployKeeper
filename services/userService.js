@@ -2,16 +2,21 @@
 
 const ErrorCodes = require("../errorCodes");
 
-const FindUserID = async (connection, username, password) => {
-    const query = 'SELECT id FROM users WHERE username = ? and pwd = ?';
-    const [rows] = await connection.execute(query, [username, password]);
-    return rows.length > 0 ? rows[0].id : null;
-}
-
-const FindUserProductExpiredDate = async (connection, userId, productId) => {
-    const query = 'SELECT end_date FROM user_product WHERE user_id = ? and product_id = ?';
+const FindUserProduct = async (connection, userId, productId) => {
+    const query = 'SELECT * FROM user_product WHERE user_id = ? and product_id = ?';
     const [rows] = await connection.execute(query, [userId, productId]);
-    return rows.length > 0 ? rows[0].end_date : null;
+    
+    if (rows.length <= 0)
+    {
+        return {
+            "code" : ErrorCodes.USER_NOT_FOUND
+        }
+    }
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+        "data" : rows
+    }
 }
 
 const AddUser = async (connection, username, password, productId) => {
@@ -31,8 +36,25 @@ const AddUser = async (connection, username, password, productId) => {
     return ErrorCodes.REGISTER_FAILED;
 };
 
+const FindUserId = async (connection, username, password) =>
+{
+    const query = 'SELECT * FROM users WHERE username = ? and pwd = ?';
+    const [rows] = await connection.execute(query, [username, password]);
+    if (rows.length <= 0)
+    {
+        return {
+            "code" : ErrorCodes.USER_NOT_FOUND
+        }
+    }
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+        "data" : rows
+    }
+}
+
 module.exports = {
-    FindUserID,
-    FindUserProductExpiredDate,
+    FindUserId,
+    FindUserProduct,
     AddUser,
 };
