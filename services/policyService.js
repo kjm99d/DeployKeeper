@@ -43,6 +43,24 @@ const FindPolicyByProductAndUser = async (connection, policyId, productId, userI
     }
 }
 
+// 사용자 정책 추가
+const AddPolicyByProductAndUser = async (connection, policyValue, policyId, productId, userId ) => {
+    const query = 'INSERT INTO user_policies (user_id, product_id, policy_id, policy_value) VALUES (?, ?, ?, ?);';
+    const [result1] = await connection.execute(query, [userId, productId, policyId, policyValue]);
+    
+    // 정책이 비어있을 경우
+    if (result1.affectedRows <= 0)
+    {
+        return {
+            "code" : ErrorCodes.POLICY_ADD_FAILED,
+        }
+    }
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+    }
+};
+
 // 사용자 정책 수정
 const UpdatePolicyByProductAndUser = async (connection, policyValue, policyId, productId, userId ) => {
     const query = 'SELECT * FROM user_policies WHERE policy_Id = ? and product_id = ? and user_Id = ?';

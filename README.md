@@ -13,6 +13,9 @@
 | ✅ 제품의 정책 가져오기 | All | /api/policy | Get | ... | ... |
 | ✅ 제품의 정책 추가하기 | Admin | /api/policy | Put | ... | ... |
 | ✅ 제품의 정책 수정하기 | Admin | /api/policy | Patch | ... | ... |
+| ❌ 사용자 정책 삭제하기 | Admin | /api/user/policy | Delete | ... | ... |
+| ✅ 사용자 정책 추가하기 | Admin | /api/user/policy | Put | ... | ... |
+| ✅ 사용자 정책 수정하기 | Admin | /api/user/policy | Patch | ... | ... |
 | ❌ 제품의 정책 삭제하기 | Admin | /api/policy | Delete | ... | ... |
 | ❌ 형상정보 가져오기 | All | /api/... | Get | ... | ... |
 | ✅ 서버키 가져오기 | All | /api/chpher/ | Get | ... | ... |

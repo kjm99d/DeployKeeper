@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { dbConfig, SecretKey_JWT } = require('./../config');
 const ProductService = require('./../services/productService');
 const UserService = require('./../services/userService');
+const PolicyService = require('./../services/policyService');
 const ErrorCodes = require('../errorCodes');
 
 // 로그인
@@ -102,6 +103,32 @@ router.post('/register', async (req, res) => {
     } catch (error) {
         console.error('Database connection failed:', error);
         res.status(500).send("Database connection failed");
+    } finally {
+        await connection.end();
+    }
+});
+
+// 사용자 정책 추가하기
+router.put('/policy', async (req, res) => {
+    const { policyName, policyValue } = req.body;
+    const connection = await mysql.createConnection(dbConfig);
+
+    const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer TOKEN' 형식을 가정
+    try {
+        const JWT = await jwt.verify(token, SecretKey_JWT);
+        const ProductID = JWT.productId;
+        const UserID = JWT.userId;
+        const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
+        if (ErrorCodes.SUCCESS == policyId.code)
+        {
+            const policyId = policyId.data[0].id;
+            return res.json(await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
+        }
+
+        return res.json(policyId);
+
+    } catch (error) {
+        return res.json({ "code": ErrorCodes.TOKEN_INVALID });
     } finally {
         await connection.end();
     }
