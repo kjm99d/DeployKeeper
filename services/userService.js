@@ -19,9 +19,9 @@ const FindUserProduct = async (connection, userId, productId) => {
     }
 }
 
-const AddUser = async (connection, username, password, productId) => {
-    const query1 = 'INSERT INTO users (username, pwd) VALUES (?, ?);';
-    const [result1] = await connection.execute(query1, [username, password]);
+const AddUser = async (connection, username, passwd, productId) => {
+    const query1 = 'INSERT INTO users (username, passwd) VALUES (?, ?);';
+    const [result1] = await connection.execute(query1, [username, passwd]);
     if (result1.affectedRows > 0)
     {
         const query2 = 'INSERT INTO user_product (user_id, product_id) VALUES (?, ?);'
@@ -36,10 +36,10 @@ const AddUser = async (connection, username, password, productId) => {
     return ErrorCodes.REGISTER_FAILED;
 };
 
-const FindUserId = async (connection, username, password) =>
+const FindUserId = async (connection, username, passwd) =>
 {
-    const query = 'SELECT * FROM users WHERE username = ? and pwd = ?';
-    const [rows] = await connection.execute(query, [username, password]);
+    const query = 'SELECT * FROM users WHERE username = ? and passwd = ?';
+    const [rows] = await connection.execute(query, [username, passwd]);
     if (rows.length <= 0)
     {
         return {

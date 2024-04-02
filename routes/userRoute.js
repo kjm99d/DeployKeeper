@@ -9,10 +9,12 @@ const UserService = require('./../services/userService');
 const PolicyService = require('./../services/policyService');
 const ErrorCodes = require('../errorCodes');
 
+const { AccessAdmin } = require('./../middlewares/TokenValidate')
+
 // 로그인
 router.post('/login', async (req, res) => {
     var code = ErrorCodes.SUCCESS;
-    const { product, username, password } = req.body;
+    const { product, username, passwd } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
     try {
@@ -25,13 +27,13 @@ router.post('/login', async (req, res) => {
         const productId = productInfo.data[0].id;
 
         // 사용자 ID 조회
-        const userId = await UserService.FindUserId(connection, username, password);
+        const userId = await UserService.FindUserId(connection, username, passwd);
         if (ErrorCodes.SUCCESS != userId.code) {
             return res.json(userId);
         }
 
         const m_userId = userId.data[0].id;
-        const m_userRole = userId.data[0].role_id;
+        const m_userRole = userId.data[0].isAdmin;
 
         // 사용자의 제품 만료기간 조회
         const userProduct = await UserService.FindUserProduct(connection, m_userId, productId);
@@ -57,11 +59,16 @@ router.post('/login', async (req, res) => {
         const expirationDate = new Date(m_userEndDate);
         const diffMilisec = expirationDate - currentDate;
 
-        if (diffMilisec > 0) {
-            // Access Token 발급
-            const token = jwt.sign({ m_userId, productId, m_userRole }, SecretKey_JWT, { expiresIn: '24h' });
-            return res.json({ code, token });
+        // 제품이 만료됨
+        if (diffMilisec <= 0) 
+        {
+            code = ErrorCodes.USER_PRODUCT_EXPIRED
+            return res.json({ code });
         }
+
+        // Access Token 발급
+        const token = jwt.sign({ "user" : m_userId, "product" : productId, "isAdmin" : m_userRole }, SecretKey_JWT, { expiresIn: '24h' });
+        return res.json({ code, token });
 
     } catch (error) {
         console.error('Database connection failed:', error);
@@ -74,24 +81,26 @@ router.post('/login', async (req, res) => {
 // 회원가입
 router.post('/register', async (req, res) => {
     var code = ErrorCodes.SUCCESS;
-    const { product, username, password } = req.body;
+    const { product, username, passwd } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
     try {
 
-        const productId = await ProductService.FindProductID(connection, product);
-        if (!productId) {
-            code = ErrorCodes.PRODUCT_NOT_FOUND;
-            return res.json({ code });
-        }
+       // 제품 유효성 검사
+       const productInfo = await ProductService.FindProduct(connection, product);
+       if (ErrorCodes.SUCCESS != productInfo.code) {
+           return res.json(productInfo);
+       }
 
-        const userId = await UserService.FindUserID(connection, username, password);
-        if (userId) {
-            code = ErrorCodes.USER_ALREADY_EXISTS;
-            return res.json({ code });
-        }
+       const productId = productInfo.data[0].id;
 
-        code = await UserService.AddUser(connection, username, password, productId);
+       // 사용자 ID 조회
+       const userId = await UserService.FindUserId(connection, username, passwd);
+       if (ErrorCodes.USER_NOT_FOUND != userId.code) {
+           return res.json(userId);
+       }
+
+        code = await UserService.AddUser(connection, username, passwd, productId);
         if (ErrorCodes.SUCCESS != code)
         {
             return res.json({code});
@@ -109,60 +118,46 @@ router.post('/register', async (req, res) => {
 });
 
 // 사용자 정책 추가하기
-router.put('/policy', async (req, res) => {
+router.put('/policy', AccessAdmin, async (req, res) => {
     const { policyName, policyValue } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
-    const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer TOKEN' 형식을 가정
-    try {
-        const JWT = await jwt.verify(token, SecretKey_JWT);
-        const ProductID = JWT.productId;
-        const UserID = JWT.userId;
-        const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
-        if (ErrorCodes.SUCCESS == policyId.code)
-        {
-            const policyId = policyId.data[0].id;
-            return res.json(await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
-        }
-
-        return res.json(policyId);
-
-    } catch (error) {
-        return res.json({ "code": ErrorCodes.TOKEN_INVALID });
-    } finally {
-        await connection.end();
+    const ProductID = req.data.productId;
+    const UserID = req.data.userId;
+    const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
+    if (ErrorCodes.SUCCESS == policyId.code) {
+        const policyId = policyId.data[0].id;
+        return res.json(await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
     }
+
+    await connection.end();
+    return res.json(policyId);
+
 });
 
 
 // 사용자 정책 수정하기
-router.patch('/policy', async (req, res) => {
+router.patch('/policy', AccessAdmin, async (req, res) => {
     const { policyName, policyValue } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
-    const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer TOKEN' 형식을 가정
-    try {
-        const JWT = await jwt.verify(token, SecretKey_JWT);
-        const ProductID = JWT.productId;
-        const UserID = JWT.userId;
-        const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
-        if (ErrorCodes.SUCCESS == policyId.code)
-        {
-            const policyId = policyId.data[0].id;
-            return res.json(await PolicyService.UpdatePolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
-        }
+    const ProductID = req.data.productId;
+    const UserID = req.data.userId;
 
-        return res.json(policyId);
-
-    } catch (error) {
-        return res.json({ "code": ErrorCodes.TOKEN_INVALID });
-    } finally {
-        await connection.end();
+    const policyId = await PolicyService.FindProductPolicyId(connection, policyName, ProductID);
+    if (ErrorCodes.SUCCESS == policyId.code) {
+        const policyId = policyId.data[0].id;
+        return res.json(await PolicyService.UpdatePolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
     }
+    await connection.end();
+
+    return res.json(policyId);
+
+
 });
 
 // 사용자 정책 삭제하기
-router.delete('/policy', async (req, res) => {
+router.delete('/policy', AccessAdmin, async (req, res) => {
     return res.status(404).send("404 Not Found");
 
 });
