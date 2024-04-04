@@ -3,34 +3,17 @@ const router = express.Router();
 const mysql = require('mysql2/promise');
 
 const ProductService = require('./../services/productService');
+const PolicyService = require('./../services/policyService');
 const {dbConfig} = require('./../config');
-const { AccessAdmin } = require('./../middlewares/TokenValidate')
 
-// 제품 추가하기
-router.put('/', AccessAdmin, async (req, res) => {
-    const { productName } = req.body;
+
+// 모든 제품 가져오기
+router.get('/all', async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
     
     try
     {
-        return res.json(await ProductService.AddProduct(connection, productName));
-    }catch {
-
-    } finally {
-        await connection.end();
-    }
-
-});
-
-// 제품 삭제하기
-router.delete('/', AccessAdmin, async (req, res) => {
-    const { productName } = req.body;
-
-    const connection = await mysql.createConnection(dbConfig);
-    
-    try
-    {
-        return res.json(await ProductService.DeleteProduct(connection, productName));
+        return res.json(await ProductService.FindAllProduct(connection));
     }catch {
 
     } finally {
@@ -67,17 +50,6 @@ router.get('/policy', async (req, res) => {
 
 });
 
-// 제품 정책 추가하기
-router.put('/policy', AccessAdmin, async (req, res) => {
-    const { policyName } = req.body;
-    const connection = await mysql.createConnection(dbConfig);
 
-    const ProductID = req.data.productId;
-    const items = await PolicyService.AddPolicyByProductId(connection, policyName, ProductID)
-    await connection.end();
-    
-    return res.json(items);
-
-});
 
 module.exports = router;

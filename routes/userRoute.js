@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
 
         // Access Token 발급
         const token = jwt.sign({ "user" : m_userId, "product" : productId, "isAdmin" : m_userRole }, SecretKey_JWT, { expiresIn: '24h' });
-        return res.json({ code, token });
+        return res.json({ code,             "data" : [token] });
 
     } catch (error) {
         console.error('Database connection failed:', error);
@@ -115,51 +115,6 @@ router.post('/register', async (req, res) => {
     } finally {
         await connection.end();
     }
-});
-
-// 사용자 정책 추가하기
-router.put('/policy', AccessAdmin, async (req, res) => {
-    const { policyName, policyValue } = req.body;
-    const connection = await mysql.createConnection(dbConfig);
-
-    const ProductID = req.data.productId;
-    const UserID = req.data.userId;
-    const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
-    if (ErrorCodes.SUCCESS == policyId.code) {
-        const policyId = policyId.data[0].id;
-        return res.json(await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
-    }
-
-    await connection.end();
-    return res.json(policyId);
-
-});
-
-
-// 사용자 정책 수정하기
-router.patch('/policy', AccessAdmin, async (req, res) => {
-    const { policyName, policyValue } = req.body;
-    const connection = await mysql.createConnection(dbConfig);
-
-    const ProductID = req.data.productId;
-    const UserID = req.data.userId;
-
-    const policyId = await PolicyService.FindProductPolicyId(connection, policyName, ProductID);
-    if (ErrorCodes.SUCCESS == policyId.code) {
-        const policyId = policyId.data[0].id;
-        return res.json(await PolicyService.UpdatePolicyByProductAndUser(connection, policyValue, policyId, ProductID, UserID));
-    }
-    await connection.end();
-
-    return res.json(policyId);
-
-
-});
-
-// 사용자 정책 삭제하기
-router.delete('/policy', AccessAdmin, async (req, res) => {
-    return res.status(404).send("404 Not Found");
-
 });
 
 module.exports = router;

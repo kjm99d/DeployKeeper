@@ -18,6 +18,16 @@ const FindProduct = async (connection, productName) => {
     }
 }
 
+const FindAllProduct = async (connection) => {
+    const query = 'SELECT * FROM products';
+    const [rows] = await connection.execute(query);
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+        "data" : rows
+    }
+}
+
 const AddProduct = async (connection, productName) => {
     const query = 'SELECT * from products WHERE product_name = ?'
     const [rows] = await connection.execute(query, [productName]);
@@ -42,9 +52,9 @@ const AddProduct = async (connection, productName) => {
     }
 }
 
-const DeleteProduct = async (connection, productName) => {
-    const query = 'DELETE FROM products WHERE product_name = ?';
-    const [result] = await connection.execute(query, [productName]);
+const DeleteProduct = async (connection, productId) => {
+    const query = 'DELETE FROM products WHERE id = ?';
+    const [result] = await connection.execute(query, [productId]);
     if (result.affectedRows > 0) {
         return {
             "code": ErrorCodes.SUCCESS
@@ -56,8 +66,11 @@ const DeleteProduct = async (connection, productName) => {
     }
 };
 
+
+
 module.exports = {
     FindProduct,
+    FindAllProduct,
     AddProduct,
     DeleteProduct
 };
