@@ -6,6 +6,7 @@ const { dbConfig } = require('./../config');
 const { AccessAdmin } = require('./../middlewares/TokenValidate')
 
 const ProductService = require('./../services/productService');
+const PolicyService = require('./../services/policyService');
 
 // ========================================================================================== //
 /* 

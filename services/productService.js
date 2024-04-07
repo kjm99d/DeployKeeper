@@ -1,5 +1,4 @@
 // productService.js
-const mysql = require('mysql2/promise');
 const ErrorCodes = require('../errorCodes');
 
 const FindProduct = async (connection, productName) => {

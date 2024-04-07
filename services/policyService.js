@@ -44,7 +44,7 @@ const FindPolicyByProductAndUser = async (connection, policyId, productId, userI
 }
 
 // 사용자 정책 추가
-const AddPolicyByProductAndUser = async (connection, policyValue, policyId, productId, userId ) => {
+const AddPolicyByProductAndUser = async (connection, policyValue, policyId, productId, userId) => {
     const query = 'INSERT INTO user_policies (user_id, product_id, policy_id, policy_value) VALUES (?, ?, ?, ?);';
     const [result1] = await connection.execute(query, [userId, productId, policyId, policyValue]);
     
@@ -75,7 +75,7 @@ const UpdatePolicyByProductAndUser = async (connection, policyValue, policyId, p
     }
 
     const update = 'UPDATE user_policies SET policy_value = ? WHERE policy_Id = ? and product_id = ? and user_Id = ?';
-    const [result] = await connection.execute(query, [policyValue, policyId, productId, userId]);
+    const [result] = await connection.execute(update, [policyValue, policyId, productId, userId]);
     
     return {
         "code" : ErrorCodes.SUCCESS,
