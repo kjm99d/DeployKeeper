@@ -7,13 +7,33 @@ const { AccessAdmin } = require('./../middlewares/TokenValidate')
 
 const ProductService = require('./../services/productService');
 const PolicyService = require('./../services/policyService');
+const UserService = require('./../services/userService');
+
+// ========================================================================================== //
+/*
+    모든 사용자 조회하기
+    - {}
+*/
+router.get("/users", AccessAdmin, async (req, res) => {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    try
+    {
+        return res.json(await UserService.FindAllEx(connection));
+    }catch {
+
+    } finally {
+        await connection.end();
+    }
+});
+
 
 // ========================================================================================== //
 /* 
     제품 추가하기
     - { productName : name } 형태로 요청
 */
-router.put('/', AccessAdmin, async (req, res) => {
+router.put('/product', AccessAdmin, async (req, res) => {
     const { productName } = req.body;
     const connection = await mysql.createConnection(dbConfig);
     
@@ -32,7 +52,7 @@ router.put('/', AccessAdmin, async (req, res) => {
     제품 삭제하기
     - { productId : id } 형태로 요청
 */
-router.delete('/', AccessAdmin, async (req, res) => {
+router.delete('/product', AccessAdmin, async (req, res) => {
     const { productId } = req.body;
 
     const connection = await mysql.createConnection(dbConfig);
@@ -46,7 +66,31 @@ router.delete('/', AccessAdmin, async (req, res) => {
         await connection.end();
     }
 });
+
+
+// 모든 제품 가져오기
+router.get('/product/all', async (req, res) => {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    try
+    {
+        return res.json(await ProductService.FindAllProduct(connection));
+    }catch {
+
+    } finally {
+        await connection.end();
+    }
+});
 // ========================================================================================== //
+
+
+// 제품의 모든 정책 가져오기 
+router.get('/policy/all', async (req, res) => {
+    const connection = await mysql.createConnection(dbConfig);
+    const ProductID = req.data.productId;
+    await connection.end();
+    return res.json(await PolicyService.FindAllProductPolicy(connection, ProductID));
+});
 
 
 /* 

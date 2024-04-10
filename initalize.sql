@@ -1,3 +1,4 @@
+-- /**************************************************************************************************************** /
 -- 사용자 정보 저장 테이블 
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY, 		-- 사용자 고유 ID
@@ -46,6 +47,9 @@ CREATE TABLE IF NOT EXISTS user_product (
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
 
+-- /**************************************************************************************************************** /
+SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;
+-- /**************************************************************************************************************** /
 -- 사용자 추가 쿼리
 INSERT INTO users (username, passwd, alias, isAdmin) VALUES ('adminUser', 'password123', 'Admin', 1);
 INSERT INTO users (username, passwd, alias, isAdmin) VALUES ('normalUser', 'password456', 'User', 0);
