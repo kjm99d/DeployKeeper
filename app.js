@@ -7,9 +7,11 @@ const port = 8080;
 const userRoutes = require('./routes/userRoute');
 const chipherRoutes = require('./routes/chipherRoute');
 const productRoutes = require('./routes/productRoute');
+const adminRoutes = require('./routes/adminRoute');
 
 app.use(express.json());
 
+app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 app.use('/api/chipher', chipherRoutes);

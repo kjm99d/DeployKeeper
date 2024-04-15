@@ -6,7 +6,8 @@ const ErrorCodes = {
     USER_NOT_FOUND : 100,       // <<! 사용자를 찾을 수 없음 
     USER_ALREADY_EXISTS : 101,  // <<! 이미 존재하는 유저임.
     USER_PRODUCT_EXPIRED : 102, // <<! 사용자의 제품 사용기간이 만료됨
-    USER_NOT_USE_TIME : 103, // <<! 사용자의 제품 사용기간이 만료됨
+    USER_NOT_USE_TIME : 103,    // <<! 사용자의 제품 사용기간이 만료됨
+    USER_NOT_ADMIN : 104,        // <<! 관리자가 아님
 
     // 회원가입 과련 에러 200~
     REGISTER_FAILED : 200,      // <<! 회원가입 오류

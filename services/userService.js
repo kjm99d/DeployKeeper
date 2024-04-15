@@ -19,6 +19,42 @@ const FindUserProduct = async (connection, userId, productId) => {
     }
 }
 
+const FindAll = async (connection) => {
+    const query = 'SELECT * FROM user_product';
+    const [rows] = await connection.execute(query);
+    
+    if (rows.length <= 0)
+    {
+        return {
+            "code" : ErrorCodes.USER_NOT_FOUND
+        }
+    }
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+        "data" : rows
+    }
+}
+
+const FindAllEx = async (connection) => {
+    const query = 'SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;';
+    const [rows] = await connection.execute(query);
+    
+    if (rows.length <= 0)
+    {
+        return {
+            "code" : ErrorCodes.USER_NOT_FOUND
+        }
+    }
+
+    return {
+        "code" : ErrorCodes.SUCCESS,
+        "data" : rows
+    }
+}
+
+
+
 const AddUser = async (connection, username, passwd, productId) => {
     const query1 = 'INSERT INTO users (username, passwd) VALUES (?, ?);';
     const [result1] = await connection.execute(query1, [username, passwd]);
@@ -55,6 +91,7 @@ const FindUserId = async (connection, username, passwd) =>
 
 module.exports = {
     FindUserId,
+    FindAll, FindAllEx,
     FindUserProduct,
     AddUser,
 };
