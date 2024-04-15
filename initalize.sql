@@ -24,8 +24,7 @@ CREATE TABLE IF NOT EXISTS product_policies (
 
 
 -- 사용자 정책 테이블
-CREATE TABLE IF NOT EXISTS user_policies (
-    -- id INT AUTO_INCREMENT PRIMARY KEY,		
+CREATE TABLE IF NOT EXISTS user_policies (	
     user_id INT,			-- 사용자 ID
     product_id INT,			-- 제품 ID
     policy_id INT,			-- 정책 ID
@@ -49,15 +48,32 @@ CREATE TABLE IF NOT EXISTS user_product (
 
 -- /**************************************************************************************************************** /
 SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;
+
+SELECT pp.policy_name, up.policy_value 
+FROM 
+	product_policies AS pp 
+LEFT JOIN 
+	user_policies AS up
+ON 
+	user_id = 1  WHERE pp.product_id = 1;
+    
+
+SELECT * FROM product_policies;
+SELECT * FROM user_policies;
+
+
 -- /**************************************************************************************************************** /
 -- 사용자 추가 쿼리
 INSERT INTO users (username, passwd, alias, isAdmin) VALUES ('adminUser', 'password123', 'Admin', 1);
 INSERT INTO users (username, passwd, alias, isAdmin) VALUES ('normalUser', 'password456', 'User', 0);
 
 -- 제품 추가 쿼리
-INSERT INTO products (product_name) VALUES ('Product 1');
+INSERT INTO product_policies (product_id, policy_name) VALUES (1, "POLICY_MELON_GOTICKETTYPE");
+INSERT INTO product_policies (product_id, policy_name) VALUES (2, "POLICY_MELON_GOTICKETTYPE");
 INSERT INTO products (product_name) VALUES ('Product 2');
 
+-- 제품 정책 추가 쿼리
+INSERT INTO products (product_name) VALUES ('Product 1');
 -- 사용자 및 제품 맵핑 데이터 쿼리
 INSERT INTO user_product (user_id, product_id, start_date, end_date) VALUES (1, 1, '2023-01-01', '2023-12-31');
 INSERT INTO user_product (user_id, product_id, start_date, end_date) VALUES (2, 1, '2023-01-01', '2023-12-31');

@@ -8,6 +8,7 @@ const { AccessAdmin } = require('./../middlewares/TokenValidate')
 const ProductService = require('./../services/productService');
 const PolicyService = require('./../services/policyService');
 const UserService = require('./../services/userService');
+const ErrorCodes = require('../errorCodes');
 
 // ========================================================================================== //
 /*
@@ -85,7 +86,7 @@ router.get('/product/all', async (req, res) => {
 
 
 // 제품의 모든 정책 가져오기 
-router.get('/policy/all', async (req, res) => {
+router.get('/product/policy/all', async (req, res) => {
     const connection = await mysql.createConnection(dbConfig);
     const ProductID = req.data.productId;
     await connection.end();
@@ -97,7 +98,7 @@ router.get('/policy/all', async (req, res) => {
     제품 정책 추가하기
     - { productId : id, policyName : "" } 형태로 요청
 */
-router.put('/policy', AccessAdmin, async (req, res) => {
+router.put('/product/policy', AccessAdmin, async (req, res) => {
     const { productId, policyName } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
@@ -110,55 +111,67 @@ router.put('/policy', AccessAdmin, async (req, res) => {
 
 // ========================================================================================== //
 
+
 /* 
-    사용자 정책 추가하기
-    - { userId : id, productId : id, policyId : id, policyValue : value } 형태로 요청
+    사용자 정책 갱신하기 ( 삭제 → 추가 )
+
+    - { 
+        userId : id, 
+        productId : id,
+        data : [ { policyId : id, policyValue : value }, 
+                    ... , 
+                    {...}
+                    { 정책 정보 SET } 
+                ] 
+        } 
+        
+        형태로 요청
 */
-router.put('/policy', AccessAdmin, async (req, res) => {
-    const { userId, productId, policyName, policyValue } = req.body;
+router.patch('/user/policy', AccessAdmin, async (req, res) => {
+    const { userId, productId, data } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
-    const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
-    if (ErrorCodes.SUCCESS == policyId.code) {
-        const policyId = policyId.data[0].id;
-        return res.json(await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, productId, userId));
+    // 특정 사용자 모든 정책 삭제
+    await PolicyService.DeleteUserPolicyFromProductIdAndUserId(connection, productId, userId);
+
+    // 정책 다시 추가 ㅎㅅㅎ
+    for (let index = 0; index < data.length; index++) {
+        const element = array[index];
+        await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, productId, userId);    
     }
+    
+    
 
     await connection.end();
     return res.json(policyId);
-
 });
 
 
 /* 
-    사용자 정책 수정하기
-    - { userId : id, productId : id, policyId : id, policyValue : value } 형태로 요청
+    사용자 정책 갱신하기
+
+    - { 
+        userId : id, 
+        productId : id
+      }
+        
+        형태로 요청
 */
-router.patch('/policy', AccessAdmin, async (req, res) => {
-    const { userId, productId, policyName, policyValue } = req.body;
+router.post('/user/policy', AccessAdmin, async (req, res) => {
+    const { userId, productId } = req.body;
     const connection = await mysql.createConnection(dbConfig);
+
     try {
+        // 특정 사용자 모든 정책 조회
+        const policy = await PolicyService.FindAllUserProductPolicy(connection, productId, userId);
+        return res.json(policy);
 
-        const policyId = await PolicyService.FindProductPolicyId(connection, policyName, productId);
-        if (ErrorCodes.SUCCESS == policyId.code) {
-            const policyId = policyId.data[0].id;
-            return res.json(await PolicyService.UpdatePolicyByProductAndUser(connection, policyValue, policyId, productId, userId));
-        }
-        return res.json(policyId);
+    } catch (e) {
 
-    } catch (error) {
-
-    } finally {
+    }
+    finally {
         await connection.end();
     }
-
 });
-
-// 사용자 정책 삭제하기
-router.delete('/policy', AccessAdmin, async (req, res) => {
-    return res.status(404).send("404 Not Found");
-
-});
-
 
 module.exports = router;
