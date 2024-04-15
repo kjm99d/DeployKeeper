@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS user_product (
 -- /**************************************************************************************************************** /
 SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;
 
-SELECT pp.policy_name, up.policy_value 
+SELECT pp.product_id, pp.policy_name, up.policy_value 
 FROM 
 	product_policies AS pp 
 LEFT JOIN 
