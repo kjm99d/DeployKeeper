@@ -136,14 +136,15 @@ router.patch('/user/policy', AccessAdmin, async (req, res) => {
 
     // 정책 다시 추가 ㅎㅅㅎ
     for (let index = 0; index < data.length; index++) {
-        const element = array[index];
+        const element = data[index];
+        const policyId = element["policy_id"];
+        const policyValue = element["policy_value"];
         await PolicyService.AddPolicyByProductAndUser(connection, policyValue, policyId, productId, userId);    
     }
     
-    
-
     await connection.end();
-    return res.json(policyId);
+    
+    return res.json({"code" : ErrorCodes.SUCCESS});
 });
 
 

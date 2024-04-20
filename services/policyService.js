@@ -169,5 +169,6 @@ module.exports = {
     FindAllUserProductPolicy,
     DeleteUserPolicyFromProductIdAndUserId,
     AddPolicyByProductId,
+    AddPolicyByProductAndUser,
     UpdatePolicyByProductAndUser,
 };

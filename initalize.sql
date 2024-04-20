@@ -74,7 +74,11 @@ INSERT INTO products (product_name) VALUES ('Product 2');
 
 -- 제품 정책 추가 쿼리
 INSERT INTO products (product_name) VALUES ('Product 1');
+
 -- 사용자 및 제품 맵핑 데이터 쿼리
 INSERT INTO user_product (user_id, product_id, start_date, end_date) VALUES (1, 1, '2023-01-01', '2023-12-31');
 INSERT INTO user_product (user_id, product_id, start_date, end_date) VALUES (2, 1, '2023-01-01', '2023-12-31');
 INSERT INTO user_product (user_id, product_id, start_date, end_date) VALUES (2, 2, '2023-01-01', '2023-12-31');
+
+-- 사용자 정책 추가 쿼리
+INSERT INTO user_policies (user_id, product_id, policy_id, policy_value) VALUES (1, 1, 1, "asd");
