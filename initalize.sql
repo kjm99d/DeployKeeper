@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS product_policies (
     id INT AUTO_INCREMENT PRIMARY KEY,			-- 정책 ID
     product_id INT,								-- 제품 ID 
     policy_name VARCHAR(255) NOT NULL,			-- 정책명
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 
@@ -29,9 +29,9 @@ CREATE TABLE IF NOT EXISTS user_policies (
     product_id INT,			-- 제품 ID
     policy_id INT,			-- 정책 ID
     policy_value LONGTEXT,	-- 정책값
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id),
-    FOREIGN KEY (policy_id) REFERENCES product_policies(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+    FOREIGN KEY (policy_id) REFERENCES product_policies(id) ON DELETE CASCADE
 );
 
 
@@ -42,12 +42,12 @@ CREATE TABLE IF NOT EXISTS user_product (
     start_date DATE,	-- 시작일
     end_date DATE,		-- 종료일
     PRIMARY KEY (user_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 -- /**************************************************************************************************************** /
-SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;
+SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.iduser_productuser_product;
 
 SELECT pp.product_id, pp.policy_name, up.policy_value 
 FROM 
@@ -60,6 +60,8 @@ ON
 
 SELECT * FROM product_policies;
 SELECT * FROM user_policies;
+
+
 
 
 -- /**************************************************************************************************************** /
