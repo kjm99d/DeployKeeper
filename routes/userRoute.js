@@ -123,4 +123,30 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// 사용자 정책 가져오기
+router.get('/policy/all', async (req, res) => {
+    // const { userId, productId } = req.body;
+    const connection = await mysql.createConnection(dbConfig);
+
+    const tokens = req.headers['authorization'];
+    const token = tokens.split(' ')[1]; // 'Bearer TOKEN' 형식을 가정
+    const JWT = await jwt.verify(token, SecretKey_JWT);
+
+    const productId = JWT.product;
+    const userId = JWT.user;
+
+
+    try {
+        // 특정 사용자 모든 정책 조회
+        const policy = await PolicyService.FindAllUserProductPolicy(connection, productId, userId);
+        return res.json(policy);
+
+    } catch (e) {
+
+    }
+    finally {
+        await connection.end();
+    }
+});
+
 module.exports = router;
