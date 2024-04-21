@@ -86,11 +86,14 @@ router.get('/product/all', async (req, res) => {
 
 
 // 제품의 모든 정책 가져오기 
-router.get('/product/policy/all', async (req, res) => {
+router.get('/product/policy/:productId', async (req, res) => {
+    const { productId } = req.params;
     const connection = await mysql.createConnection(dbConfig);
-    const ProductID = req.data.productId;
+    
+    const result = await PolicyService.FindAllProductPolicy(connection, productId);
     await connection.end();
-    return res.json(await PolicyService.FindAllProductPolicy(connection, ProductID));
+
+    return res.json(result);
 });
 
 
@@ -143,7 +146,7 @@ router.patch('/user/policy', AccessAdmin, async (req, res) => {
     }
     
     await connection.end();
-    
+
     return res.json({"code" : ErrorCodes.SUCCESS});
 });
 
