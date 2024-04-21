@@ -127,8 +127,16 @@ const DeleteUserPolicyFromProductIdAndUserId = async (connection, productId, use
 
 // 특정 사용자의 정책을 모두 가져온다.
 const FindAllUserProductPolicy = async (connection, productId, userId) => {
-    const query = "SELECT pp.id as policy_id, pp.policy_name, up.policy_value FROM product_policies AS pp LEFT JOIN user_policies AS up ON user_id = ?  WHERE pp.product_id = ?;";
-    const [rows] = await connection.execute(query, [userId, productId]);
+    const query = `
+        SELECT pp.id as policy_id, pp.policy_name, up.policy_value
+        FROM 
+            (SELECT * FROM product_policies WHERE product_id = ?) AS pp
+        LEFT JOIN 
+            (SELECT * FROM user_policies WHERE user_id = ?) AS up
+        ON 
+            up.policy_id = pp.id;
+    `;
+    const [rows] = await connection.execute(query, [productId, userId]);
 
     // 정책이 비어있을 경우
     if (rows.length <= 0) {
