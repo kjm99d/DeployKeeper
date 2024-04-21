@@ -84,19 +84,6 @@ router.get('/product/all', async (req, res) => {
 });
 // ========================================================================================== //
 
-
-// 제품의 모든 정책 가져오기 
-router.get('/product/policy/:productId', async (req, res) => {
-    const { productId } = req.params;
-    const connection = await mysql.createConnection(dbConfig);
-    
-    const result = await PolicyService.FindAllProductPolicy(connection, productId);
-    await connection.end();
-
-    return res.json(result);
-});
-
-
 /* 
     제품 정책 추가하기
     - { productId : id, policyName : "" } 형태로 요청
@@ -110,6 +97,32 @@ router.put('/product/policy', AccessAdmin, async (req, res) => {
     
     return res.json(items);
 
+});
+
+/* 
+    제품 정책 삭제하기
+    - 요청 파라미터에 ID값 전달
+*/
+router.delete('/product/policy/:productId/:policyId', AccessAdmin, async (req, res) => {
+    const { productId, policyId } = req.params;
+    const connection = await mysql.createConnection(dbConfig);
+
+    const items = await PolicyService.DeletePolicyByProductIdAndPolicyId(connection, policyId, productId)
+    await connection.end();
+    
+    return res.json(items);
+
+});
+
+// 제품의 모든 정책 가져오기 
+router.get('/product/policy/:productId', async (req, res) => {
+    const { productId } = req.params;
+    const connection = await mysql.createConnection(dbConfig);
+    
+    const result = await PolicyService.FindAllProductPolicy(connection, productId);
+    await connection.end();
+
+    return res.json(result);
 });
 
 // ========================================================================================== //

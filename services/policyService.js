@@ -157,11 +157,29 @@ const AddPolicyByProductId = async (connection, policyName, productId) => {
 
     // 정책을 추가한다.
     const query = 'INSERT INTO product_policies (product_id, policy_name) VALUES (?, ?);';
-    const [result1] = await connection.execute(query, [username, password]);
+    const [result1] = await connection.execute(query, [productId, policyName]);
     if (result1.affectedRows <= 0)
     {
         return {
             "code" : ErrorCodes.POLICY_ADD_FAILED
+        }
+    }
+    
+    return {
+        "code" : ErrorCodes.SUCCESS
+    }
+}
+
+// 제품정책삭제
+const DeletePolicyByProductIdAndPolicyId = async (connection, policyId, productId) => {
+
+    // 정책을 추가한다.
+    const query = 'DELETE FROM product_policies WHERE id=? and product_id = ? ';
+    const [result1] = await connection.execute(query, [policyId, productId]);
+    if (result1.affectedRows <= 0)
+    {
+        return {
+            "code" : ErrorCodes.POLICY_NOT_FOUND
         }
     }
     
@@ -176,6 +194,7 @@ module.exports = {
     FindPolicyByProductAndUser,
     FindAllUserProductPolicy,
     DeleteUserPolicyFromProductIdAndUserId,
+    DeletePolicyByProductIdAndPolicyId,
     AddPolicyByProductId,
     AddPolicyByProductAndUser,
     UpdatePolicyByProductAndUser,
