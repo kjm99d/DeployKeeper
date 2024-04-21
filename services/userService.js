@@ -37,7 +37,7 @@ const FindAll = async (connection) => {
 }
 
 const FindAllEx = async (connection) => {
-    const query = 'SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;';
+    const query = 'SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id WHERE isAdmin = 0';
     const [rows] = await connection.execute(query);
     
     if (rows.length <= 0)
