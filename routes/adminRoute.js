@@ -53,8 +53,8 @@ router.put('/product', AccessAdmin, async (req, res) => {
     제품 삭제하기
     - { productId : id } 형태로 요청
 */
-router.delete('/product', AccessAdmin, async (req, res) => {
-    const { productId } = req.body;
+router.delete('/product/:productId', AccessAdmin, async (req, res) => {
+    const { productId } = req.params;
 
     const connection = await mysql.createConnection(dbConfig);
     
