@@ -89,9 +89,41 @@ const FindUserId = async (connection, username, passwd) =>
     }
 }
 
+const UpdateUserExpirationDate = async (connection, productId, userId, data) => {
+    const query = 'UPDATE user_product SET start_date = ?, end_date = ? WHERE user_id = ? and product_id = ?';
+    const [result] = await connection.execute(query, [...data ,productId, userId]);
+    if (result.affectedRows > 0) {
+        return {
+            "code": ErrorCodes.SUCCESS
+        };
+    } else {
+        return {
+            "code": ErrorCodes.PRODUCT_NOT_FOUND
+        };
+    }
+}
+
+const GetUserExpirationDate = async (connection, productId, userId) => {
+    const query = 'SELECT * FROM user_product WHERE user_id = ? and product_id = ?';
+    const [rows] = await connection.execute(query, [userId, productId]);
+    if (rows.length <= 0) {
+        return {
+            "code": ErrorCodes.USER_NOT_FOUND
+        };
+    } 
+    
+    return {
+        "code": ErrorCodes.SUCCESS,
+        "data": rows
+    };
+
+}
+
 module.exports = {
     FindUserId,
     FindAll, FindAllEx,
     FindUserProduct,
     AddUser,
+    GetUserExpirationDate,
+    UpdateUserExpirationDate,
 };
