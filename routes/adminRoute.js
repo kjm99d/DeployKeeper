@@ -127,6 +127,39 @@ router.get('/product/policy/:productId', async (req, res) => {
 
 // ========================================================================================== //
 
+/*
+    사용자 계정 사용기간 수정
+    -   {
+            userId : id,
+            data : [ timestamp1, timestamp2 ]
+
+        }
+*/
+router.patch('/user/product/date', AccessAdmin, async (req, res) => {
+    const { userId, productId, data } = req.body;
+    const connection = await mysql.createConnection(dbConfig);
+
+    const result = await UserService.UpdateUserExpirationDate(connection, productId, userId, data);
+    
+    await connection.end();
+
+    return res.json(result);
+});
+
+
+/*
+    사용자 계정 사용기간 가져오기
+*/
+router.get('/user/product/date', AccessAdmin, async (req, res) => {
+    const { userId, productId } = req.query;
+    const connection = await mysql.createConnection(dbConfig);
+
+    const result = await UserService.GetUserExpirationDate(connection, productId, userId);
+    
+    await connection.end();
+
+    return res.json(result);
+});
 
 /* 
     사용자 정책 갱신하기 ( 삭제 → 추가 )
