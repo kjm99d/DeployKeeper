@@ -22,13 +22,6 @@ const FindUserProduct = async (connection, userId, productId) => {
 const FindAll = async (connection) => {
     const query = 'SELECT * FROM user_product';
     const [rows] = await connection.execute(query);
-    
-    if (rows.length <= 0)
-    {
-        return {
-            "code" : ErrorCodes.USER_NOT_FOUND
-        }
-    }
 
     return {
         "code" : ErrorCodes.SUCCESS,
