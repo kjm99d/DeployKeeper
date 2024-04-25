@@ -7,14 +7,6 @@ const ErrorCodes = require('../errorCodes');
 const FindAllProductPolicy = async (connection, productId) => {
     const query = 'SELECT * FROM product_policies WHERE product_id = ?';
     const [rows] = await connection.execute(query, [productId]);
-    
-    // 정책이 비어있을 경우
-    if (rows.length <= 0)
-    {
-        return {
-            "code" : ErrorCodes.POLICY_NOT_FOUND,
-        }
-    }
 
     // 정책이 유효한 경우
     return {

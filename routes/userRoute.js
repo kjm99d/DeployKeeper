@@ -103,7 +103,7 @@ router.post('/register', async (req, res) => {
        // 사용자 ID 조회
        const userId = await UserService.FindUserId(connection, username, passwd);
        if (ErrorCodes.USER_NOT_FOUND != userId.code) {
-           return res.json(userId);
+           return res.json({"code" : ErrorCodes.USER_ALREADY_EXISTS});
        }
 
         code = await UserService.AddUser(connection, username, passwd, productId);
