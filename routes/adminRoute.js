@@ -136,10 +136,10 @@ router.get('/product/policy/:productId', async (req, res) => {
         }
 */
 router.patch('/user/product/date', AccessAdmin, async (req, res) => {
-    const { userId, productId, data } = req.body;
+    const { userId, productId, data, alias } = req.body;
     const connection = await mysql.createConnection(dbConfig);
 
-    const result = await UserService.UpdateUserExpirationDate(connection, productId, userId, data);
+    const result = await UserService.UpdateUserExpirationDate(connection, productId, userId, data, alias);
     
     await connection.end();
 

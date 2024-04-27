@@ -75,9 +75,9 @@ const FindUserId = async (connection, username, passwd) =>
     }
 }
 
-const UpdateUserExpirationDate = async (connection, productId, userId, data) => {
-    const query = 'UPDATE user_product SET start_date = ?, end_date = ? WHERE user_id = ? and product_id = ?';
-    const [result] = await connection.execute(query, [...data, userId, productId]);
+const UpdateUserExpirationDate = async (connection, productId, userId, data, alias) => {
+    const query = 'UPDATE user_product SET start_date = ?, end_date = ?, alias = ? WHERE user_id = ? and product_id = ?';
+    const [result] = await connection.execute(query, [...data, alias, userId, productId]);
     if (result.affectedRows > 0) {
         return {
             "code": ErrorCodes.SUCCESS
