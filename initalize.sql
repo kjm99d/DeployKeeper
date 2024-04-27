@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY, 		-- 사용자 고유 ID
     username VARCHAR(50) NOT NULL UNIQUE,	-- 사용자명
 	passwd VARCHAR(255) NOT NULL,			-- 비밀번호
-    alias VARCHAR(255),						-- 별명
     isAdmin int NOT NULL					-- 권한 (관리자/일반 사용자)
 );
 
@@ -39,6 +38,7 @@ CREATE TABLE IF NOT EXISTS user_policies (
 CREATE TABLE IF NOT EXISTS user_product (
     user_id INT,		-- 사용자 ID
     product_id INT,		-- 제품 ID
+    alias VARCHAR(255), -- 별명
     start_date DATE,	-- 시작일
     end_date DATE,		-- 종료일
     PRIMARY KEY (user_id, product_id),
@@ -67,7 +67,7 @@ ON
 SELECT * FROM product_policies;
 SELECT * FROM user_policies;
 SELECT * FROM product_policies WHERE product_id = 1;
-
+SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id WHERE isAdmin = 0;
 
 
 
