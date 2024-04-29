@@ -92,29 +92,33 @@ router.post('/register', async (req, res) => {
 
     try {
 
-       // 제품 유효성 검사
-       const productInfo = await ProductService.FindProduct(connection, product);
-       if (ErrorCodes.SUCCESS != productInfo.code) {
-           return res.json(productInfo);
-       }
-
-       const productId = productInfo.data[0].id;
-
-       // 사용자 ID 조회
-       const userId = await UserService.FindUserId(connection, username, passwd);
-       if (ErrorCodes.USER_NOT_FOUND != userId.code) {
-           return res.json({"code" : ErrorCodes.USER_ALREADY_EXISTS});
-       }
-
-        code = await UserService.AddUser(connection, username, passwd, productId);
-        if (ErrorCodes.SUCCESS != code)
-        {
-            return res.json({code});
+        // 제품 유효성 검사
+        const productInfo = await ProductService.FindProduct(connection, product);
+        if (ErrorCodes.SUCCESS != productInfo.code) {
+            return res.json(productInfo);
         }
 
-        return res.json({code});
+        const productId = productInfo.data[0].id;
 
-        
+        // 사용자 ID 조회
+        const userId = await UserService.FindUserId(connection, username, passwd);
+        if (ErrorCodes.USER_NOT_FOUND == userId.code) {
+            // 사용자 ID가 없으면 사용자를 제품에 추가한다.
+            code = await UserService.AddUser(connection, username, passwd, productId);
+            if (ErrorCodes.SUCCESS != code) {
+                return res.json({ code });
+            }
+
+        } else {
+            const userProduct = await UserService.FindUserProduct(connection, userId.data[0].id, productId);
+            if (ErrorCodes.USER_NOT_FOUND == userProduct.code) {
+                return res.json(await UserService.AddUserToUserProduct(connection, userId.data[0].id, productId));
+            }
+        }
+
+        return res.json({ code });
+
+
     } catch (error) {
         console.error('Database connection failed:', error);
         res.status(500).send("Database connection failed");

@@ -39,7 +39,14 @@ const FindAllEx = async (connection) => {
     }
 }
 
+const AddUserToUserProduct = async (connection, userId, productId) => {
+    const query2 = 'INSERT INTO user_product (user_id, product_id) VALUES (?, ?);'
+    const [result2] = await connection.execute(query2, [userId, productId]);
 
+    if (result2.affectedRows > 0) {
+        return ErrorCodes.SUCCESS;
+    }
+}
 
 const AddUser = async (connection, username, passwd, productId) => {
     const query1 = 'INSERT INTO users (username, passwd) VALUES (?, ?);';
@@ -110,6 +117,7 @@ module.exports = {
     FindAll, FindAllEx,
     FindUserProduct,
     AddUser,
+    AddUserToUserProduct,
     GetUserExpirationDate,
     UpdateUserExpirationDate,
 };
