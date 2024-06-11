@@ -46,6 +46,14 @@ CREATE TABLE IF NOT EXISTS user_product (
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+
+CREATE TABLE IF NOT EXISTS log_product (
+	log_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 로그시간
+    product_id INT,		-- 제품 ID
+    msg varchar(255),
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 -- /**************************************************************************************************************** /
 SELECT * FROM user_product up INNER JOIN users u ON up.user_id = u.id;
 SELECT * FROM users;

@@ -30,6 +30,9 @@ const ErrorCodes = {
     POLICY_ALREADY_EXISTS : 601,    // <<! 이미 동일한 정책이 존재함
     POLICY_ADD_FAILED : 602,        // <<! 정책 추가 오류
     
+
+    // 로그 관련 에러 700~
+    LOG_ADD_FAILED : 700
 };
 
 module.exports = ErrorCodes;

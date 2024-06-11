@@ -7,6 +7,7 @@ const { dbConfig, SecretKey_JWT } = require('./../config');
 const ProductService = require('./../services/productService');
 const UserService = require('./../services/userService');
 const PolicyService = require('./../services/policyService');
+const LogService = require('./../services/logService');
 const ErrorCodes = require('../errorCodes');
 
 // 로그인
@@ -144,6 +145,38 @@ router.get('/policy/all', async (req, res) => {
         // 특정 사용자 모든 정책 조회
         const policy = await PolicyService.FindAllUserProductPolicy(connection, productId, userId);
         return res.json(policy);
+
+    } catch (e) {
+
+    }
+    finally {
+        await connection.end();
+    }
+});
+
+router.put('/log', async (req, res) => {
+    const { productId, msg } = req.body;
+    const connection = await mysql.createConnection(dbConfig);
+    try {
+        const data = await LogService.AddLog(connection, productId, msg);
+        return res.json(data);
+
+    } catch (e) {
+
+    }
+    finally {
+        await connection.end();
+    }
+});
+
+
+router.get('/log', async (req, res) => {
+    const { productId } = req.query;
+    const connection = await mysql.createConnection(dbConfig);
+
+    try {
+        const data = await LogService.GetLogByProduct(connection, productId, 100);
+        return res.json(data);
 
     } catch (e) {
 
